@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Calendar, Clock, X, Check, ChevronLeft, ChevronRight, Star, Menu } from "lucide-react"
+import { PopupModal } from "react-calendly"
 
 interface Doctor {
   id: string
@@ -94,6 +95,12 @@ export default function AppointmentsPage() {
   const [showBookingForm, setShowBookingForm] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
+  const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
+
+  useEffect(() => {
+    setRootElement(document.body)
+  }, [])
 
   const timeSlots = [
     "9:00 AM",
@@ -318,10 +325,13 @@ export default function AppointmentsPage() {
                   <Calendar className="w-16 h-16 text-[#d4d4c8] mx-auto mb-4" />
                   <p className="text-[#6b6b6b] mb-6 text-lg">No upcoming appointments</p>
                   <button
-                    onClick={() => setShowBookingForm(true)}
+                    onClick={() => {
+                      console.log('Opening Calendly modal')
+                      setIsCalendlyOpen(true)
+                    }}
                     className="inline-block px-6 py-3 bg-[#1a1a1a] hover:bg-[#2a2a2a] text-white rounded-full font-medium transition-all shadow-lg"
                   >
-                    Book an Appointment
+                    Book Appointment with Doctor
                   </button>
                 </div>
               )}
@@ -330,10 +340,13 @@ export default function AppointmentsPage() {
             {/* Book New Appointment Button */}
             {!showBookingForm && appointments.length > 0 && (
               <button
-                onClick={() => setShowBookingForm(true)}
+                onClick={() => {
+                  console.log('Opening Calendly modal')
+                  setIsCalendlyOpen(true)
+                }}
                 className="w-full px-6 py-3 bg-[#1a1a1a] hover:bg-[#2a2a2a] text-white rounded-full font-medium transition-all shadow-lg"
               >
-                Book Another Appointment
+                Book Appointment with Doctor
               </button>
             )}
           </div>
@@ -516,6 +529,17 @@ export default function AppointmentsPage() {
           )}
         </div>
       </main>
+
+      {/* Calendly Popup Modal */}
+      <PopupModal
+        url="https://calendly.com/navneet_chauhan-srmap/30min"
+        onModalClose={() => {
+          console.log('Closing Calendly modal')
+          setIsCalendlyOpen(false)
+        }}
+        open={isCalendlyOpen}
+        rootElement={rootElement || document.body}
+      />
     </div>
   )
 }
